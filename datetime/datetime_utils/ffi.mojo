@@ -1,4 +1,3 @@
-# Reference: https://github.com/gabrieldemarmiesse/mojo-stdlib-extensions/
 from memory.unsafe import Pointer
 
 alias _CLOCK_REALTIME = 0
