@@ -33,5 +33,3 @@ struct Duration:
   @staticmethod
   fn minutes(minutes:Int) -> Duration:
     return Duration((DURATION_MINUTE * minutes).to_int())
-
-

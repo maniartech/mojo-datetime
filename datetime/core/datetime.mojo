@@ -44,7 +44,23 @@ struct DateTime:
 
     self._epoch_to_datetime(epoch_sec.to_int())
 
+  fn __str__(self) -> String:
+    """
+    Returns a string representation of the DateTime.
 
+    Returns:
+      A string representing the DateTime.
+    """
+    return self.to_iso8601()
+
+  fn __repr__(self) -> String:
+    """
+    Returns a string representation of the DateTime.
+
+    Returns:
+      A string representing the DateTime.
+    """
+    return self.to_iso8601()
 
   fn to_iso8601(self) -> String:
     """

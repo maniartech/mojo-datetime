@@ -47,3 +47,21 @@ struct TimeZone:
       identical to the ISO 8601 format.
     """
     return self.to_iso8601()
+
+  fn __str__(self) -> String:
+    """
+    Converts the TimeZone to a string.
+
+    Returns:
+      A string representing the TimeZone in the format "TimeZone(identifier, secondsFromGMT)".
+    """
+    return self.to_iso8601()
+
+  fn __repr__(self) -> String:
+    """
+    Converts the TimeZone to a string.
+
+    Returns:
+      A string representing the TimeZone in the format "TimeZone(identifier, secondsFromGMT)".
+    """
+    return self.to_iso8601()
