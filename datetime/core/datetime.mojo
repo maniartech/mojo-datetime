@@ -46,7 +46,7 @@ struct DateTime:
 
 
 
-  fn toIso8601(self) -> String:
+  fn to_iso8601(self) -> String:
     """
     Converts the DateTime to an ISO 8601 formatted string.
 
@@ -56,10 +56,10 @@ struct DateTime:
     return (
       str(self.year) + "-" + self.month + "-" + self.day + "T"
       + self.hour + ":" + self.minute + ":" + self.second
-      + self.timeZone.toIso8601()
+      + self.timeZone.to_iso8601()
     )
 
-  fn toRfc3339(self) -> String:
+  fn to_rfc3339(self) -> String:
     """
     Converts the DateTime to an RFC 3339 formatted string.
 
@@ -69,7 +69,7 @@ struct DateTime:
     return (
       str(self.year) + "-" + self.month + "-" + self.day + "T"
       + self.hour + ":" + self.minute + ":" + self.second
-      + self.timeZone.toRfc3339()
+      + self.timeZone.to_rfc3339()
     )
 
   fn add(self, other: Duration) -> DateTime:

@@ -21,7 +21,7 @@ struct TimeZone:
     """
     return TimeZone("UTC", 0)
 
-  fn toIso8601(self) -> String:
+  fn to_iso8601(self) -> String:
     """
     Converts the TimeZone to an ISO 8601 formatted string.
 
@@ -38,7 +38,7 @@ struct TimeZone:
     else:
       return "-" + str(-self.secondsFromGMT / 3600) + ":" + (-self.secondsFromGMT % 3600) / 60
 
-  fn toRfc3339(self) -> String:
+  fn to_rfc3339(self) -> String:
     """
     Converts the TimeZone to an RFC 3339 formatted string.
 
@@ -46,4 +46,4 @@ struct TimeZone:
       A string representing the TimeZone in RFC 3339 format. This is currently
       identical to the ISO 8601 format.
     """
-    return self.toIso8601()
+    return self.to_iso8601()
