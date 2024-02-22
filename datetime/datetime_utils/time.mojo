@@ -26,7 +26,7 @@ fn get_days_in_month(year: Int, month: Int) -> Int:
     return days_in_month[month]
 
 
-fn epoch_to_datetime(epoch_seconds: Int) -> DateTime:
+fn _epoch_to_datetime(epoch_seconds: Int) -> DateTime:
     # Constants for calculation
     let seconds_in_minute = 60
     let seconds_in_hour = 3600
