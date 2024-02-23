@@ -2,7 +2,7 @@
 alias _UTC = TimeZone(0, "UTC")
 
 @value
-struct TimeZone:
+struct TimeZone(Stringable):
   """
   A structure representing a time zone.
 
@@ -67,6 +67,15 @@ struct TimeZone:
     """
     return self.to_iso8601()
 
+  fn __hash__(self) -> Int:
+    """
+    Returns the hash value of the time zone.
+
+    Returns:
+      The hash value of the time zone.
+    """
+    return self.secondsFromGMT ^ hash(self.identifier)
+
   fn __eq__(self, other: TimeZone) -> Bool:
     """
     Compares the time zone to another time zone.
@@ -78,6 +87,18 @@ struct TimeZone:
       True if the time zones are equal, False otherwise.
     """
     return self.secondsFromGMT == other.secondsFromGMT  and self.identifier == other.identifier
+
+  fn __ne__(self, other: TimeZone) -> Bool:
+    """
+    Compares the time zone to another time zone.
+
+    Args:
+      other: The time zone to compare to.
+
+    Returns:
+      True if the time zones are not equal, False otherwise.
+    """
+    return self.secondsFromGMT != other.secondsFromGMT or self.identifier != other.identifier
 
   @staticmethod
   fn local() -> TimeZone:
