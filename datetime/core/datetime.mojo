@@ -2,7 +2,7 @@ from .timezone import TimeZone
 from .duration import Duration
 from ..datetime_utils.time import is_leap_year, get_days_in_month
 
-struct DateTime:
+struct DateTime (Stringable):
   """
   A structure representing a date and time.
 
