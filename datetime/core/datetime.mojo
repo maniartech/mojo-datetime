@@ -126,6 +126,24 @@ struct DateTime (Stringable):
     return DateTime(sec.to_int(), self.timeZone)
 
 
+  fn __sub__(self, other: DateTime) -> Duration:
+    """
+    Calculates the difference between two DateTimes.
+
+    Args:
+      other: The DateTime to calculate the difference with.
+
+    Example:
+      from datetime import DateTime
+      dt1 = DateTime(1617222494, "UTC")
+      dt2 = DateTime(1617222494, "UTC")
+      diff = dt1 - dt2
+
+    Returns:
+      A Duration representing the difference between the two DateTimes.
+    """
+    let diff = self.epoch_sec - other.epoch_sec
+    return Duration(diff.to_int())
 
   # Private helper function to convert a date and time to a Unix timestamp.
 
@@ -191,3 +209,33 @@ struct DateTime (Stringable):
       self.minute = minute.to_int()
       self.second = second
       self.nanosecond = 0
+
+  fn _datetime_to_epoch(self) -> Int:
+    """
+    Converts the DateTime to a Unix timestamp.
+
+    Returns:
+      An integer representing the number of seconds since the Unix epoch (January 1, 1970, 00:00:00 UTC).
+    """
+    let seconds_in_minute = 60
+    let seconds_in_hour = 3600
+    let seconds_in_day = 86400
+
+    var days = 0
+    for year in range(1970, self.year):
+      if is_leap_year(year):
+        days += 366
+      else:
+        days += 365
+
+    for month in range(1, self.month):
+      days += get_days_in_month(self.year, month)
+
+    days += self.day - 1
+
+    let hours = self.hour
+    let minutes = self.minute
+    let seconds = self.second
+
+    return (days * seconds_in_day) + (hours * seconds_in_hour) + (minutes * seconds_in_minute) + seconds
+
