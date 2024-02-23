@@ -1,25 +1,26 @@
 
+alias _UTC = TimeZone(0, "UTC")
+
 @value
 struct TimeZone:
   """
   A structure representing a time zone.
 
   Attributes:
-    identifier (String): The identifier of the time zone.
     secondsFromGMT (Int): The offset from GMT in seconds.
+    identifier (String): The identifier of the time zone.
   """
-  var identifier: String
   var secondsFromGMT: Int
+  var identifier: String
 
-  @staticmethod
-  fn UTC() -> TimeZone:
+  fn is_utc(self) -> Bool:
     """
-    Static method that returns a TimeZone object representing UTC.
+    Returns whether the time zone is UTC.
 
     Returns:
-      A TimeZone object with identifier "UTC" and secondsFromGMT 0.
+      True if the time zone is UTC, False otherwise.
     """
-    return TimeZone("UTC", 0)
+    return self.secondsFromGMT == 0
 
   fn to_iso8601(self) -> String:
     """
@@ -65,3 +66,35 @@ struct TimeZone:
       A string representing the TimeZone in the format "TimeZone(identifier, secondsFromGMT)".
     """
     return self.to_iso8601()
+
+  fn __eq__(self, other: TimeZone) -> Bool:
+    """
+    Compares the time zone to another time zone.
+
+    Args:
+      other: The time zone to compare to.
+
+    Returns:
+      True if the time zones are equal, False otherwise.
+    """
+    return self.secondsFromGMT == other.secondsFromGMT  and self.identifier == other.identifier
+
+  @staticmethod
+  fn local() -> TimeZone:
+    """
+    Returns the local time zone.
+
+    Returns:
+      The local time zone.
+    """
+    return TimeZone(0, "Local")
+
+  @staticmethod
+  fn utc() -> TimeZone:
+    """
+    Returns the UTC time zone.
+
+    Returns:
+      The UTC time zone.
+    """
+    return _UTC
