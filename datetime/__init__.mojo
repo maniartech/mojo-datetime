@@ -1,15 +1,16 @@
 from .datetime_utils.ffi import _clock_gettime
 
 from .core.datetime import DateTime
-from .core.timezone import TimeZone
+from .core.timezone import TimeZone, _UTC
 from .core.duration import Duration
+
 
 
 fn utc_now() -> DateTime:
     """
     Returns the `DateTime` object representing the current time in UTC.
     """
-    return DateTime(time(), TimeZone.UTC())
+    return DateTime(time(), _UTC)
 
 fn time() -> Int64:
     """
