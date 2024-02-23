@@ -8,5 +8,7 @@ fn main():
   let local_time = now.add(Duration.hours(5.5))
   print("Current time in IST", local_time)
 
-  let tomorrow = now.add(Duration.days(1))
+  let tomorrow = now.add(Duration.days(1) + 132)
   print("Tomorrow in UTC", tomorrow)
+
+  print("Difference between tomorrow and now", now - tomorrow)
