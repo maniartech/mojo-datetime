@@ -26,3 +26,27 @@ fn get_days_in_month(year: Int, month: Int) -> Int:
 
     return days_in_month[month]
 
+fn to_epoch(year: Int, month: Int, day: Int, hour: Int=0, minute: Int=0, second: Int=0) -> Int64:
+  """
+  Converts the DateTime to a Unix timestamp.
+
+  Returns:
+    An integer representing the number of seconds since the Unix epoch (January 1, 1970, 00:00:00 UTC).
+  """
+  let seconds_in_minute = 60
+  let seconds_in_hour = 3600
+  let seconds_in_day = 86400
+
+  var days = 0
+  for y in range(1970, year):  # Corrected variable name to avoid confusion
+    if is_leap_year(y):
+      days += 366
+    else:
+      days += 365
+
+  for m in range(1, month):  # Using the month directly
+    days += get_days_in_month(year, m - 1)
+
+  days += day - 1  # Adding the days of the current month
+
+  return Int64((days * seconds_in_day) + (hour * seconds_in_hour) + (minute * seconds_in_minute) + second)
