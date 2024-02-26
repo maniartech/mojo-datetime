@@ -58,11 +58,19 @@ struct _CTM:
         }
 
 @always_inline
-fn _local_time(owned tv_sec: Int) raises -> _CTM:
-  """Low-level call to the localtime_r libc function."""
+fn _local_time(owned tv_sec: Int) -> _CTM:
+  """Low-level call to the localtime libc function."""
 
   let p_tv_sec = Pointer[Int].address_of(tv_sec)
   let tm = external_call["localtime", Pointer[_CTM], Pointer[Int]](p_tv_sec).load()
+  return tm
+
+@always_inline
+fn _gm_time(owned tv_sec: Int) -> _CTM:
+  """Low-level call to the gmtime libc function."""
+
+  let p_tv_sec = Pointer[Int].address_of(tv_sec)
+  let tm = external_call["gmtime", Pointer[_CTM], Pointer[Int]](p_tv_sec).load()
   return tm
 
 fn now() -> _CTM:
