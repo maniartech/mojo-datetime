@@ -1,6 +1,10 @@
+from math import math
 from .timezone import TimeZone
 from .duration import Duration
 from ..datetime_utils.time import is_leap_year, get_days_in_month
+from ..datetime_utils._string import __
+from ..datetime_utils.ffi import _CTM, _gm_time, _local_time
+from ..datetime_utils.time import to_epoch
 
 struct DateTime (Stringable):
   """
@@ -42,7 +46,7 @@ struct DateTime (Stringable):
     self.second = 0
     self.nanosecond = 0
 
-    self._epoch_to_datetime(epoch_sec.to_int())
+    self._from_epoch(epoch_sec.to_int())
 
   fn __str__(self) -> String:
     """
@@ -70,9 +74,9 @@ struct DateTime (Stringable):
       A string representing the DateTime in ISO 8601 format.
     """
     return (
-      str(self.year) + "-" + self.month + "-" + self.day + "T"
-      + self.hour + ":" + self.minute + ":" + self.second
-      + self.timeZone.to_iso8601()
+      str(self.year) + "-" + __(self.month) + "-" + __(self.day) + "T"
+      + __(self.hour) + ":" + __(self.minute) + ":" + __(self.second)
+      + self.timeZone.to_rfc3339()
     )
 
   fn to_rfc3339(self) -> String:
@@ -83,8 +87,8 @@ struct DateTime (Stringable):
       A string representing the DateTime in RFC 3339 format.
     """
     return (
-      str(self.year) + "-" + self.month + "-" + self.day + "T"
-      + self.hour + ":" + self.minute + ":" + self.second
+      str(self.year) + "-" + __(self.month) + "-" + __(self.day) + "T"
+      + __(self.hour) + ":" + __(self.minute) + ":" + __(self.second)
       + self.timeZone.to_rfc3339()
     )
 
@@ -125,7 +129,6 @@ struct DateTime (Stringable):
     let sec = self.epoch_sec - other.seconds
     return DateTime(sec.to_int(), self.timeZone)
 
-
   fn __sub__(self, other: DateTime) -> Duration:
     """
     Calculates the difference between two DateTimes.
@@ -147,95 +150,26 @@ struct DateTime (Stringable):
 
   # Private helper function to convert a date and time to a Unix timestamp.
 
-
-  fn _epoch_to_datetime(inout self, epoch_seconds: Int):
-      # Constants for calculation
-      let seconds_in_minute = 60
-      let seconds_in_hour = 3600
-      let seconds_in_day = 86400
-
-      # Calculate time components
-      var hour = (epoch_seconds / seconds_in_hour) % 24
-      var minute = (epoch_seconds / seconds_in_minute) % 60
-      var second = epoch_seconds % 60
-
-      # Days since epoch
-      var days:Float64 = epoch_seconds / seconds_in_day
-
-      # Calculate year, starting from 1970
-      var year = 1970
-      while days >= 365:
-          if is_leap_year(year):
-              if days > 366:
-                  days -= 366
-                  year += 1
-              else:
-                  break
-          else:
-              days -= 365
-              year += 1
-
-      # Calculate month and day
-      var month = 0
-      let days_in_month = get_days_in_month(year, month)
-      while days > days_in_month:
-          days -= days_in_month
-          month += 1
-          if month == 2 and is_leap_year(year):  # Adjust for leap year in February
-              if days > 29:
-                days -= 1
-              else:
-                  break
-
-      for i in range(12):
-        let day_in_month = get_days_in_month(year, i)
-        if days > day_in_month:
-          days -= Float64(day_in_month)
-          month += 1
-          if month == 2 and is_leap_year(year):  # Adjust for leap year in February
-            if days > 29:
-              days -= 1
-            else:
-              break
-        else:
-          break
-
-      var day = days
-
-      self.year = year
-      self.month = month
-      self.day = day.to_int()
-      self.hour = hour.to_int()
-      self.minute = minute.to_int()
-      self.second = second
-      self.nanosecond = 0
-
-  fn _datetime_to_epoch(self) -> Int:
+  fn _from_epoch(inout self, epoch_seconds: Int):
     """
-    Converts the DateTime to a Unix timestamp.
+    Converts a Unix timestamp to a date and time.
 
-    Returns:
-      An integer representing the number of seconds since the Unix epoch (January 1, 1970, 00:00:00 UTC).
+    Args:
+      epoch_seconds: The number of seconds since the Unix epoch (January 1, 1970, 00:00:00 UTC).
     """
-    let seconds_in_minute = 60
-    let seconds_in_hour = 3600
-    let seconds_in_day = 86400
+    var tm: _CTM
+    if self.timeZone.is_utc():
+      tm = _gm_time(self.epoch_sec.to_int())
+    else:
+      tm = _local_time(self.epoch_sec.to_int())
 
-    var days = 0
-    for year in range(1970, self.year):
-      if is_leap_year(year):
-        days += 366
-      else:
-        days += 365
+    self.year       = tm.tm_year.to_int() + 1900
+    self.month      = tm.tm_mon.to_int() + 1
+    self.day        = tm.tm_mday.to_int()
+    self.hour       = tm.tm_hour.to_int()
+    self.minute     = tm.tm_min.to_int()
+    self.second     = tm.tm_sec.to_int()
+    self.nanosecond = 0
 
-    for month in range(1, self.month):
-      days += get_days_in_month(self.year, month)
-
-    days += self.day - 1
-
-    let hours = self.hour
-    let minutes = self.minute
-    let seconds = self.second
-
-    return (days * seconds_in_day) + (hours * seconds_in_hour) + (minutes * seconds_in_minute) + seconds
-
+  fn to_int(self) -> Int64:
+    return to_epoch(self.year, self.month, self.day, self.hour, self.minute, self.second)
