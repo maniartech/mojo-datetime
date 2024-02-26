@@ -1,9 +1,9 @@
 
-alias DURATION_SECOND: Float32  = 1
+alias DURATION_SECOND: Float32  =  1
 alias DURATION_MINUTE: Float32  = 60 * DURATION_SECOND
 alias DURATION_HOUR: Float32    = 60 * DURATION_MINUTE
 alias DURATION_DAY: Float32     = 24 * DURATION_HOUR
-alias DURATION_WEEK: Float32    = 7 * DURATION_DAY
+alias DURATION_WEEK: Float32    =  7 * DURATION_DAY
 
 @value
 struct Duration (Stringable):
