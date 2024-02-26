@@ -34,10 +34,15 @@ struct TimeZone(Stringable):
     """
     if self.secondsFromGMT == 0:
       return "Z"
-    elif self.secondsFromGMT > 0:
-      return "+" + str(self.secondsFromGMT / 3600) + ":" + (self.secondsFromGMT % 3600) / 60
-    else:
-      return "-" + str(-self.secondsFromGMT / 3600) + ":" + (-self.secondsFromGMT % 3600) / 60
+
+    if self.secondsFromGMT > 0:
+      return "+"
+        + str(self.secondsFromGMT / 3600) + ":" + (self.secondsFromGMT % 3600) / 60
+        + self.identifier if self.identifier != "local" else ""
+
+    return "-"
+      + str(-self.secondsFromGMT / 3600) + ":" + (-self.secondsFromGMT % 3600) / 60
+      + self.identifier if self.identifier != "local" else ""
 
   fn to_rfc3339(self) -> String:
     """
@@ -108,7 +113,7 @@ struct TimeZone(Stringable):
     Returns:
       The local time zone.
     """
-    return TimeZone(0, "Local")
+    return TimeZone(0, "local")
 
   @staticmethod
   fn utc() -> TimeZone:
