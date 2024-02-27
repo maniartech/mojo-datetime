@@ -58,7 +58,7 @@ struct _CTM:
         }
 
 @always_inline
-fn _local_time(owned tv_sec: Int) -> _CTM:
+fn local_time(owned tv_sec: Int) -> _CTM:
   """Low-level call to the localtime libc function."""
 
   let p_tv_sec = Pointer[Int].address_of(tv_sec)
@@ -66,20 +66,22 @@ fn _local_time(owned tv_sec: Int) -> _CTM:
   return tm
 
 @always_inline
-fn _gm_time(owned tv_sec: Int) -> _CTM:
+fn gm_time(owned tv_sec: Int) -> _CTM:
   """Low-level call to the gmtime libc function."""
 
   let p_tv_sec = Pointer[Int].address_of(tv_sec)
   let tm = external_call["gmtime", Pointer[_CTM], Pointer[Int]](p_tv_sec).load()
   return tm
 
+@always_inline
 fn now() -> _CTM:
   var t = _get_time_of_day().sec
-  try:
-    return _local_time(t.to_int())
-  except e:
-    print("error >>>", e)
-    return _CTM()
+  return local_time(t.to_int())
+
+@always_inline
+fn gm_now() -> _CTM:
+  var t = _get_time_of_day().sec
+  return gm_time(t.to_int())
 
 fn main():
   print("time of day >>>", _get_time_of_day().sec, _get_time_of_day().nsec)
