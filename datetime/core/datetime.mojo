@@ -12,7 +12,9 @@ from ..helpers.ffi    import _CTM, gm_time, local_time
 @value
 struct DateTime (Stringable, CollectionElement):
   """
-  A structure representing a date and time.
+  Represents a date and time and provides methods for date and time arithmetic.
+  It also provides methods for converting the date and time to a string in
+  various formats. For example, ISO 8601 and RFC 3339 formats.
 
   Attributes:
     year (Int): The year component of the date.
@@ -38,7 +40,7 @@ struct DateTime (Stringable, CollectionElement):
 
   var epoch_sec: Int64
 
-  fn __init__(inout self, year: Int, month: Int, day: Int, hour: Int=0, minute: Int=0, second: Int=0, timeZone: Optional[TimeZone]=None):
+  fn __init__(inout self, year: Int, month: Int, day: Int, hour: Int=0, minute: Int=0, second: Int=0, tz: Optional[TimeZone]=None):
     """
     Initializes a new DateTime. It resets the date components to its valid range
     if they are out of range. For example, if the month is less than 1, it will be
@@ -52,24 +54,25 @@ struct DateTime (Stringable, CollectionElement):
       hour: The hour component of the time.
       minute: The minute component of the time.
       second: The second component of the time.
-      timeZone: The time zone of the date and time.
+      tz: The time zone of the date and time (optional).
     """
-    let m = math.min(math.max(1, month), 12)
-    let d = math.min(math.max(1, day), get_days_in_month(year, month))
-    let h = math.min(math.max(0, hour), 23)
-    let i = math.min(math.max(0, minute), 59)
-    let s = math.min(math.max(0, second), 59)
+    let y = math.max(2000 + year if year < 100 else year, 0)
+    let m = math.max(math.min(12, month), 1)
+    let d = math.max(math.min(get_days_in_month(y, m), day), 1)
+    let h = math.max(math.min(23, hour), 0)
+    let i = math.max(math.min(59, minute), 0)
+    let s = math.max(math.min(59, second), 0)
 
-    self.year = year
-    self.month = month
-    self.day = day
-    self.hour = hour
-    self.minute = minute
-    self.second = second
+    self.year       = y
+    self.month      = m
+    self.day        = d
+    self.hour       = h
+    self.minute     = i
+    self.second     = s
     self.nanosecond = 0
 
-    self.epoch_sec = to_epoch(year, month, day, hour, minute, second)
-    self.timeZone = timeZone
+    self.epoch_sec = to_epoch(y, m, d, h, i, s)
+    self.timeZone = tz
 
   @staticmethod
   fn from_unix(epoch_sec:Int64, tz:Optional[TimeZone]=None) -> DateTime:
@@ -82,7 +85,7 @@ struct DateTime (Stringable, CollectionElement):
       ctm.tm_year.to_int(), ctm.tm_mon.to_int(), ctm.tm_mday.to_int(),
       ctm.tm_hour.to_int(), ctm.tm_min.to_int(), ctm.tm_sec.to_int(),
       tz
-      )
+    )
 
   fn __str__(self) -> String:
     """
