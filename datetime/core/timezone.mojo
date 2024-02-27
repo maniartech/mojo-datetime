@@ -1,8 +1,9 @@
+from collections import CollectionElement
 
 alias _UTC = TimeZone(0, "UTC")
 
 @value
-struct TimeZone(Stringable):
+struct TimeZone(Stringable, CollectionElement):
   """
   A structure representing a time zone.
 
