@@ -1,6 +1,5 @@
 from datetime import utc_now, Duration, DateTime, TimeZone
-from datetime.datetime_utils.time import to_epoch
-
+from datetime.helpers.time import to_epoch
 
 fn main():
   let now = utc_now()
@@ -17,4 +16,4 @@ fn main():
   let epoch:Int64 = to_epoch(2024, 5, 30, 13, 30, 45)
   print("Epoch time for 2024-05-30T13:30:45", epoch)
 
-  print("Current time in UTC", DateTime(epoch.to_int(), TimeZone.utc()))
+  # print("Current time in UTC", DateTime(epoch.to_int(), TimeZone.utc()))
