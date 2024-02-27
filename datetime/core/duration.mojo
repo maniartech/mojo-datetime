@@ -1,3 +1,5 @@
+from collections import CollectionElement
+
 alias DURATION_SECOND: Float32  =  1
 alias DURATION_MINUTE: Float32  = 60 * DURATION_SECOND
 alias DURATION_HOUR: Float32    = 60 * DURATION_MINUTE
@@ -5,7 +7,7 @@ alias DURATION_DAY: Float32     = 24 * DURATION_HOUR
 alias DURATION_WEEK: Float32    =  7 * DURATION_DAY
 
 @value
-struct Duration (Stringable):
+struct Duration (Stringable, CollectionElement):
   var seconds: Int
 
   fn __init__(inout self, seconds: Int):
@@ -13,10 +15,10 @@ struct Duration (Stringable):
 
   fn __str__(self) -> String:
     let seconds = Float32(self.seconds)
-    let days = (seconds / DURATION_DAY).to_int()
-    let hours = ((seconds % DURATION_DAY) / DURATION_HOUR).to_int()
+    let days    = (seconds / DURATION_DAY).to_int()
+    let hours   = ((seconds % DURATION_DAY) / DURATION_HOUR).to_int()
     let minutes = ((seconds % DURATION_HOUR) / DURATION_MINUTE).to_int()
-    let second = (seconds % DURATION_MINUTE).to_int()
+    let second  = (seconds % DURATION_MINUTE).to_int()
 
     if days >= 1:
       return str(days) + "d " + str(hours) + "h " + str(minutes) + "m " + str(second) + "s"
@@ -33,6 +35,7 @@ struct Duration (Stringable):
   fn __sub__(self, other: Duration) -> Duration:
     return Duration(self.seconds - other.seconds)
 
+  @always_inline
   @staticmethod
   fn days(days:Float32) -> Duration:
     """
@@ -46,6 +49,7 @@ struct Duration (Stringable):
     """
     return Duration((DURATION_DAY * days).to_int())
 
+  @always_inline
   @staticmethod
   fn weeks(weeks:Int) -> Duration:
     """
