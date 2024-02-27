@@ -1,4 +1,3 @@
-
 from collections.vector import InlinedFixedVector
 
 from ..core.datetime import DateTime
